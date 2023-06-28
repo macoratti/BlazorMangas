@@ -1,0 +1,64 @@
+﻿@page "/login"
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+
+<h1>Login</h1>
+
+@if (ShowErrors)
+{
+    <DisplayMessage ErrorMessage="@Error" />
+}
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Credenciais</h5>
+        <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group mt-2">
+                <label for="email">Email</label>
+                <InputText Id="email" Class="form-control" @bind-Value="loginModel.Email" />
+                <ValidationMessage For="@(() => loginModel.Email)" />
+            </div>
+            <div class="form-group mt-2">
+                <label for="password">Password</label>
+                <InputText Id="password" type="password" Class="form-control"
+                @bind-Value="loginModel.Password" />
+                <ValidationMessage For="@(() => loginModel.Password)" />
+            </div>
+            <button type="submit" class="btn btn-primary mt-2">Enviar</button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+
+    private LoginModel loginModel = new LoginModel();
+    private bool ShowErrors;
+    private string Error = string.Empty;
+
+    private async Task HandleLogin()
+    {
+        ShowErrors = false;
+        try
+        {
+            var result = await AuthService.Login(loginModel);
+
+            if (result.Token is not null)
+            {
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+                Error = "Login inválido";
+                ShowErrors = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Error = "Não foi possível fazer o Login : " + ex.Message;
+            ShowErrors = true;
+        }
+    }
+}

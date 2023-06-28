@@ -1,0 +1,10 @@
+﻿@using System.Security.Claims;
+<AuthorizeView>
+    <Authorized>
+        @context.User.Identity.Name
+        <a href="LogOut">Log out</a>
+    </Authorized>
+    <NotAuthorized>
+        <a href="Login">Log in</a>
+    </NotAuthorized>
+</AuthorizeView>
