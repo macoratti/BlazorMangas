@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BlazorMangas.Models.DTOs;
-
 public class MangaDTO
 {
     public int Id { get; set; }
