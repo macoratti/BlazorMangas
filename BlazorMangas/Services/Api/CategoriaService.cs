@@ -2,7 +2,6 @@
 using System.Net.Http.Json;
 
 namespace BlazorMangas.Services.Api;
-
 public class CategoriaService : ICategoriaService
 {
     private readonly IHttpClientFactory _httpClientFactory;

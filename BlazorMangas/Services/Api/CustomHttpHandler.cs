@@ -1,7 +1,6 @@
 ﻿using Blazored.LocalStorage;
 
 namespace BlazorMangas.Services.Api;
-
 public class CustomHttpHandler : DelegatingHandler
 {
     private readonly ILocalStorageService _localStorageService;

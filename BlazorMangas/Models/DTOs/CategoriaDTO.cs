@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace BlazorMangas.Models.DTOs;
-
 public class CategoriaDTO
 {
     public int Id { get; set; }
