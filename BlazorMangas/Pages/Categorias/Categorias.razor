@@ -1,7 +1,49 @@
 ﻿@page "/categorias"
+@inject ICategoriaService _categoriaService
+@inject NavigationManager NavigationManager
 
-<h3>Categorias</h3>
+<h2>Categorias</h2>
+
+@if (categorias is not null)
+{
+    <table class="table table-striped">
+        <thead> <tr><th scope="col">Id</th><th scope="col">Nome</th></tr></thead>
+        <tbody>
+            @foreach (var categoria in categorias)
+            {
+                <tr>
+                    <td>@categoria.Id</td>
+                    <td>@categoria.Nome</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <DisplayMessage ErrorMessage="Não foi possível acessar Categorias !!!" />
+}
+<div>
+    <DisplayMessage ErrorMessage="@errorMessage" />
+</div>
+
 
 @code {
+    private IEnumerable<CategoriaDTO> categorias = 
+                       new List<CategoriaDTO>();
 
+    private string? errorMessage;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            categorias = await _categoriaService.GetCategorias();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            NavigationManager.NavigateTo("notauthorized");
+        }
+    }
 }
