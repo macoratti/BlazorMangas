@@ -5,6 +5,7 @@ namespace BlazorMangas.Services.Api;
 
 public class CategoriaService : ICategoriaService
 {
+    //variáveis locais
     private readonly IHttpClientFactory _httpClientFactory;
     public ILogger<CategoriaService> _logger;
     private const string apiEndpoint = "/api/categorias/";

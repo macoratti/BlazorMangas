@@ -18,6 +18,7 @@ public class CustomHttpHandler : DelegatingHandler
             return await base.SendAsync(request, cancellationToken);
         }
 
+
         var jwtToken = await _localStorageService.GetItemAsync<string>("authToken");
 
         if (!string.IsNullOrEmpty(jwtToken))
