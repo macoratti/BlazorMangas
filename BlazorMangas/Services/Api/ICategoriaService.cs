@@ -5,7 +5,6 @@ namespace BlazorMangas.Services.Api;
 public interface ICategoriaService
 {
     Task<List<CategoriaDTO>> GetCategorias();
-
     Task<CategoriaDTO> GetCategoria(int id);
 
     //Task CreateCategoria(CategoriaDTO categoriaDto);

@@ -1,5 +1,4 @@
 ﻿namespace BlazorMangas.Models.DTOs;
-
 public class MangaCategoriaDTO
 {
     public int Id { get; set; }
