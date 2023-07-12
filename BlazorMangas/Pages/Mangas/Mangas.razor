@@ -1,7 +1,78 @@
 ﻿@page "/mangas"
+@inject IMangaService _mangaService
+@inject NavigationManager NavigationManager
 
 <h3>Mangás</h3>
 
+<div>
+    <a class="btn btn-success" href="manga/create">Novo Mangá</a>
+</div>
+<br />
+@if (mangas is not null)
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th></th>
+                <th scope="col">Id</th>
+                <th scope="col">Título</th>
+                <th scope="col">Editora</th>
+                <th scope="col">Preço</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var manga in mangas)
+            {
+                <tr>
+                    <td><img class="icon" src="@manga.Imagem" height="75" width="52"></td>
+                    <td>@manga.Id</td>
+                    <td>@manga.Titulo</td>
+                    <td>@manga.Editora</td>
+                    <td>@manga.Preco</td>
+                    <td><a class="btn btn-primary" href="manga/edit/@manga.Id">Editar</a> </td>
+                    <td><a class="btn btn-danger"> Deletar</a> </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <DisplayMessage ErrorMessage="@errorMessage" />
+}
+
+
 @code {
 
+    private IEnumerable<MangaDTO> mangas = new List<MangaDTO>();
+
+    private string? errorMessage = "Não foi possível acessar Mangás";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await CarregaMangas();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            NavigationManager.NavigateTo("notauthorized");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Erro ao carregar mangás : {ex.Message}";
+        }
+    }
+
+    protected async Task CarregaMangas()
+    {
+        try
+        {
+            mangas = await _mangaService.GetMangas();
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+    }
 }
