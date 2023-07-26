@@ -66,14 +66,51 @@ public class MangaService : IMangaService
         return manga;
     }
 
-    public Task<bool> DeleteManga(int id)
+    public async Task<bool> DeleteManga(int id)
     {
-        throw new NotImplementedException();
+        var httpClient = _httpClientFactory.CreateClient("ApiMangas");
+
+        using (var response = await httpClient.DeleteAsync(apiEndpoint + id))
+        {
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                throw new UnauthorizedAccessException();
+            }
+        }
+        return false;
     }
 
-    public Task<MangaDTO> GetManga(int id)
+    public async Task<MangaDTO> GetManga(int id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var httpClient = _httpClientFactory.CreateClient("ApiMangas");
+            var response = await httpClient.GetAsync(apiEndpoint + id);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<MangaDTO>();
+            }
+            else
+            {
+                var message = await response.Content.ReadAsStringAsync();
+                _logger.LogError($"Erro ao obter o mangá pelo id= {id} - {message}");
+                throw new Exception($"Status Code : {response.StatusCode} - {message}");
+            }
+        }
+        catch (UnauthorizedAccessException)
+        {
+            throw new UnauthorizedAccessException();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Erro ao obter o mangá pelo id={id} \n\n {ex.Message}");
+            throw;
+        }
     }
 
     public Task<IEnumerable<MangaDTO>> GetMangaPorCategoria(int id)
@@ -81,10 +118,25 @@ public class MangaService : IMangaService
         throw new NotImplementedException();
     }
 
-   
-
-    public Task<MangaDTO> UpdateManga(int id, MangaDTO mangaDto)
+    public async Task<MangaDTO> UpdateManga(int id, MangaDTO mangaDto)
     {
-        throw new NotImplementedException();
+        var httpClient = _httpClientFactory.CreateClient("ApiMangas");
+
+        MangaDTO mangaUpdated = new MangaDTO();
+
+        using (var response = await httpClient.PutAsJsonAsync(apiEndpoint + id, mangaDto))
+        {
+            if (response.IsSuccessStatusCode)
+            {
+                var apiResponse = await response.Content.ReadAsStreamAsync();
+                mangaUpdated = await JsonSerializer
+                                    .DeserializeAsync<MangaDTO>(apiResponse, _options);
+            }
+            else if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                throw new UnauthorizedAccessException();
+            }
+        }
+        return mangaUpdated;
     }
 }

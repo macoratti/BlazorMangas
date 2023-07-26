@@ -1,0 +1,43 @@
+﻿@if (ExibirConfirmacao)
+{
+    <div class="modal-backdrop show"></div>
+
+    <div class="modal" tabindex="-1" role="dialog"
+         aria-hidden="true" style="display:block;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@Titulo</h5>
+                    <button @onclick="onCancela" type="button" class="close"
+                            data-dismiss="modal" aria-label="Fechar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @ChildContent
+                </div>
+                <div class="modal-footer">
+                    <button @onclick="onCancela" type="button" class="btn btn-secondary"
+                            data-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button @onclick="onConfirma" type="button"
+                            class="btn btn-primary">
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool ExibirConfirmacao { get; set; } = false;
+    [Parameter] public string Titulo { get; set; } = "Confirma Exclusão ?";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public EventCallback onConfirma { get; set; }
+    [Parameter] public EventCallback onCancela { get; set; }
+
+    public void Exibir() => ExibirConfirmacao = true;
+    public void Ocultar() => ExibirConfirmacao = false;
+}

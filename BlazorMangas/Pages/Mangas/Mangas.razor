@@ -30,7 +30,7 @@
                     <td>@manga.Editora</td>
                     <td>@manga.Preco</td>
                     <td><a class="btn btn-primary" href="manga/edit/@manga.Id">Editar</a> </td>
-                    <td><a class="btn btn-danger"> Deletar</a> </td>
+                    <td><a class="btn btn-danger" @onclick="@(()=> Deletar(manga.Id))" style=" color : white">Deletar</a> </td>
                 </tr>
             }
         </tbody>
@@ -41,12 +41,20 @@ else
     <DisplayMessage ErrorMessage="@errorMessage" />
 }
 
+<Confirma @ref="confirma" onCancela="CancelaConfirma" onConfirma="DeletaConfirma">
+    <div>Deseja realmente excluir este item ?</div>
+</Confirma>
+
 
 @code {
 
     private IEnumerable<MangaDTO> mangas = new List<MangaDTO>();
 
     private string? errorMessage = "Não foi possível acessar Mangás";
+
+    Confirma? confirma;
+    
+    int codigoManga;
 
     protected override async Task OnInitializedAsync()
     {
@@ -75,4 +83,23 @@ else
             throw;
         }
     }
+
+    void Deletar(int mangaId)
+    {
+        confirma.Exibir();
+        codigoManga = mangaId;
+    }
+
+    void CancelaConfirma()
+    {
+        confirma.Ocultar();
+    }
+
+    async Task DeletaConfirma()
+    {
+        await _mangaService.DeleteManga(codigoManga);
+        confirma.Ocultar();
+        await CarregaMangas();
+    }
+
 }

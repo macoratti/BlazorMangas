@@ -19,7 +19,7 @@ public class ApiAuthenticationStateProvider : AuthenticationStateProvider
         var savedToken = await _localStorage.GetItemAsync<string>("authToken");
         var expirationToken = await _localStorage.GetItemAsync<string>("tokenExpiration");
 
-        if (string.IsNullOrWhiteSpace(savedToken) || TokenExpirou(expirationToken))
+        if (string.IsNullOrWhiteSpace(savedToken))
         {
             MarkUserAsLoggedOut();
             return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
