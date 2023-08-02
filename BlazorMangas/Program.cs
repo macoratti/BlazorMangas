@@ -24,5 +24,6 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 //serviço de categorias e mangas
 builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 builder.Services.AddScoped<IMangaService, MangaService>();
+builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 
 await builder.Build().RunAsync();
