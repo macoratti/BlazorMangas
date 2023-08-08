@@ -45,16 +45,29 @@ else
     <div>Deseja realmente excluir este item ?</div>
 </Confirma>
 
+<Paginacao QuantidadeTotalPaginas="QuantidadeTotalPaginas" paginaAtual="paginaAtual"
+           Raio="3" PaginaSelecionada="PaginaSelecionada">
+</Paginacao>
+
 
 @code {
 
     private IEnumerable<MangaDTO> mangas = new List<MangaDTO>();
+    private MangaPaginacaoResponseDTO mangasPaginacaoDTO = new MangaPaginacaoResponseDTO();
+    private int QuantidadeTotalPaginas;
+    private int paginaAtual = 1;
 
     private string? errorMessage = "Não foi possível acessar Mangás";
 
     Confirma? confirma;
     
     int codigoManga;
+
+    private async Task PaginaSelecionada(int pagina)
+    {
+        paginaAtual = pagina;
+        await CarregaMangas(pagina);
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -72,17 +85,32 @@ else
         }
     }
 
-    protected async Task CarregaMangas()
+    //protected async Task CarregaMangas()
+    //{
+    //    try
+    //    {
+    //        mangas = await _mangaService.GetMangas();
+    //    }
+    //    catch (Exception)
+    //    {
+    //        throw;
+    //    }
+    //}
+    async Task CarregaMangas(int pagina = 1, int quantidadePorPagina = 3)
     {
         try
         {
-            mangas = await _mangaService.GetMangas();
+            mangasPaginacaoDTO = await _mangaService.GetMangasPaginacao(pagina,
+                quantidadePorPagina);
+            mangas = mangasPaginacaoDTO.Mangas;
+            QuantidadeTotalPaginas = mangasPaginacaoDTO.TotalPaginas;
         }
         catch (Exception)
         {
-            throw;
+            NavigationManager.NavigateTo("notauthorized");
         }
     }
+
 
     void Deletar(int mangaId)
     {

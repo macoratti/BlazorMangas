@@ -1,4 +1,5 @@
 ﻿using BlazorMangas.Models.DTOs;
+using BlazorMangas.Models.Enums;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text;
@@ -16,6 +17,9 @@ public class MangaService : IMangaService
     private MangaDTO? manga;
     private List<MangaDTO>? mangas;
 
+    private int QuantidadeTotalPaginas;
+    private MangaPaginacaoResponseDTO? responsePaginacaoDTO;
+
     public MangaService(IHttpClientFactory httpClientFactory,
         ILogger<CategoriaService> logger)
     {
@@ -23,6 +27,42 @@ public class MangaService : IMangaService
         _logger = logger;
         _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
     }
+
+    public async Task<MangaPaginacaoResponseDTO> GetMangasPaginacao(int pagina, 
+        int quantidadePorPagina)
+    {
+        var caminho = $"paginacao?pagina={pagina}&quantidadePorPagina={quantidadePorPagina}";
+        var apiUrl = apiEndpoint + caminho;
+        try
+        {
+            var httpClient = _httpClientFactory.CreateClient("ApiMangas");
+            var httpResponse = await httpClient.GetAsync(apiUrl);
+
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var responseString = await httpResponse.Content.ReadAsStringAsync();
+                responsePaginacaoDTO = 
+                    JsonSerializer.Deserialize<MangaPaginacaoResponseDTO>
+                    (responseString, _options);
+
+                QuantidadeTotalPaginas = responsePaginacaoDTO.TotalPaginas;
+                mangas = responsePaginacaoDTO.Mangas;
+            }
+            else
+            {
+                _logger.LogWarning("O request para a API falhou com o status: " 
+                    + httpResponse.StatusCode);
+            }
+            return responsePaginacaoDTO;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Erro ao acessar categorias: " +
+                $"{apiEndpoint}/paginacao" + ex.Message);
+            throw new UnauthorizedAccessException();
+        }
+    }
+
     public async Task<IEnumerable<MangaDTO>> GetMangas()
     {
         try
