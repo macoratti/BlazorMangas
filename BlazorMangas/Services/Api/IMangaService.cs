@@ -14,7 +14,7 @@ public interface IMangaService
 
     Task<bool> DeleteManga(int id);
 
-    Task<IEnumerable<MangaDTO>> GetMangaPorCategoria(int id);
+    Task<IEnumerable<MangaDTO>> GetMangasPorCategoria(int id);
 
     Task<MangaPaginacaoResponseDTO> GetMangasPaginacao(int pagina, int quantidadePorPagina);
 

@@ -1,0 +1,39 @@
+﻿@page "/catalogo"
+@inject IMangaService _mangaService
+@inject NavigationManager NavigationManager
+
+@if (Mangas == null)
+{
+    <Spinner />
+}
+else
+{
+    <h3 class="mb-5">Mangás</h3>
+    @if (Mangas.Count() > 0)
+    { 
+        <div class="row mt-3">
+           <ExibirMangas Mangas="@Mangas"></ExibirMangas>
+        </div>
+    }
+}
+
+@code {
+    public IEnumerable<MangaDTO>? Mangas { get; set; }
+    public string? MensagemErro { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Mangas = await _mangaService.GetMangas();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            NavigationManager.NavigateTo("notauthorized");
+        }
+        catch (Exception ex)
+        {
+            MensagemErro = ex.Message;
+        }
+    }
+}

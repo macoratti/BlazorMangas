@@ -153,9 +153,33 @@ public class MangaService : IMangaService
         }
     }
 
-    public Task<IEnumerable<MangaDTO>> GetMangaPorCategoria(int id)
+    public async Task<IEnumerable<MangaDTO>> GetMangasPorCategoria(int id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var httpClient = _httpClientFactory.CreateClient("ApiMangas");
+            var response = await httpClient.GetAsync(apiEndpoint + "get-mangas-by-category/" + id);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<IEnumerable<MangaDTO>>();
+            }
+            else
+            {
+                var message = await response.Content.ReadAsStringAsync();
+                _logger.LogError($"Erro ao obter os mangás pelo id= {id} - {message}");
+                throw new Exception($"Status Code : {response.StatusCode} - {message}");
+            }
+        }
+        catch (UnauthorizedAccessException)
+        {
+            throw new UnauthorizedAccessException();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Erro ao obter os mangás pelo id={id} \n\n {ex.Message}");
+            throw;
+        }
     }
 
     public async Task<MangaDTO> UpdateManga(int id, MangaDTO mangaDto)

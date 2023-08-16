@@ -7,13 +7,14 @@
 @if (categorias is not null)
 {
     <table class="table table-striped">
-        <thead> <tr><th scope="col">Id</th><th scope="col">Nome</th></tr></thead>
+        <thead> <tr><th scope="col">Id</th><th scope="col">Nome</th><th scope="col">Ícone</th></tr></thead>
         <tbody>
             @foreach (var categoria in categorias)
             {
                 <tr>
                     <td>@categoria.Id</td>
                     <td>@categoria.Nome</td>
+                    <td>@categoria.IconCSS</td>
                 </tr>
             }
         </tbody>

@@ -1,0 +1,22 @@
+﻿@foreach (var manga in Mangas)
+{
+    <div class="col-md-3 mb-2">
+        <a href="/MangaDetalhes/@manga.Id">
+            <div class="card">
+                <img class="img-fluid" src="@manga.Imagem">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">
+                        @manga.Titulo
+                        @manga.Preco.ToString("c")
+                    </h5>
+                </div>
+            </div>
+        </a>
+    </div>
+}
+
+@code {
+
+    [Parameter]
+    public IEnumerable<MangaDTO>? Mangas { get; set; }
+}

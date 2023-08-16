@@ -1,0 +1,58 @@
+﻿@page "/MangasPorCategoria/{CategoriaId:int}"
+
+@if (MangasDto == null && MensagemErro == null)
+{
+    <Spinner />
+}
+else if (MensagemErro != null)
+{
+    <DisplayMessage ErrorMessage="@MensagemErro" />
+    MensagemErro = null;
+}
+else
+{
+    <h3>Mangas (@NomeCategoria)</h3>
+
+    @if (MangasDto.Count() > 0)
+    {
+        <div class="row mt-6">
+            <ExibirMangas Mangas="@MangasDto"></ExibirMangas>
+        </div>
+    }
+
+}
+
+@code {
+    [Parameter]
+    public int CategoriaId { get; set; }
+
+    [Inject]
+    public IMangaService? _mangaService { get; set; }
+
+    public IEnumerable<MangaDTO>? MangasDto { get; set; }
+
+    public string? NomeCategoria { get; set; }
+    public string? MensagemErro { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            //ProdutosDto = await ProdutoService.GetItensPorCategoria(CategoriaId);
+            MangasDto = await _mangaService.GetMangasPorCategoria(CategoriaId);
+
+            if (MangasDto != null && MangasDto.Count() > 0)
+            {
+                var mangaDto = MangasDto.FirstOrDefault(p => p.CategoriaId == CategoriaId);
+                if (mangaDto != null)
+                {
+                    NomeCategoria = mangaDto.Categoria.Nome;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            MensagemErro = "Categoria não encontrada";
+        }
+    }
+}

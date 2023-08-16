@@ -69,5 +69,6 @@ public class MangaDTO
     [Range(1, 999)]
     public int Estoque { get; set; }
 
+    public CategoriaDTO? Categoria { get; set; }
     public int CategoriaId { get; set; }
 }

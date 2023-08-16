@@ -1,0 +1,42 @@
+﻿@if (CategoriasDto == null && MensagemErro == null)
+{
+    <h3>Carregando...</h3>
+}
+else if (MensagemErro != null)
+{
+    <DisplayMessage MensagemErro="@MensagemErro" />
+}
+else
+{
+    @foreach (var categoria in CategoriasDto)
+    {
+        var link = "/MangasPorCategoria/" + categoria.Id;
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="@link">
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="@categoria.IconCSS"></span>&nbsp;@categoria.Nome
+            </NavLink>
+        </div>
+    }
+}
+
+@code {
+    [Inject]
+    public ICategoriaService? _categoriaService { get; set; }
+
+    public IEnumerable<CategoriaDTO>? CategoriasDto { get; set; }
+
+    public string? MensagemErro { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            CategoriasDto = await _categoriaService.GetCategorias();
+        }
+        catch (Exception ex)
+        {
+            MensagemErro = ex.Message;
+        }
+    }
+}
