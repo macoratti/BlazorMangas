@@ -8,6 +8,18 @@
 }
 else
 {
+    <div class="form-inline">
+        <input type="text" class="form-control mb-2 mr-sm-2"
+        @bind="nomeFiltro"
+               placeholder="Filtrar por titulo" />
+        <button type="button" class="btn btn-primary mr-sm-2 mb-2" @onclick="Filtrar">
+            Filtrar
+        </button>
+        <button type="button" class="btn btn-danger mb-2" @onclick="LimparFiltro">
+            Limpar
+        </button>
+    </div>
+
     <h3 class="mb-5">Mangás</h3>
     @if (Mangas.Count() > 0)
     { 
@@ -21,11 +33,29 @@ else
     public IEnumerable<MangaDTO>? Mangas { get; set; }
     public string? MensagemErro { get; set; }
 
+    private int QuantidadeTotalPaginas;
+    private int paginaAtual = 1;
+    private string nomeFiltro = string.Empty;
+    Confirma confirma = null;
+
+    private async Task Filtrar()
+    {
+        paginaAtual = 1;
+        await CarregaCatalogo(nomeFiltro);
+    }
+
+    private async Task LimparFiltro()
+    {
+        nomeFiltro = string.Empty;
+        paginaAtual = 1;
+        await CarregaCatalogo();
+    }
+
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            Mangas = await _mangaService.GetMangas();
+            await CarregaCatalogo();
         }
         catch (UnauthorizedAccessException)
         {
@@ -34,6 +64,25 @@ else
         catch (Exception ex)
         {
             MensagemErro = ex.Message;
+        }
+    }
+
+    async Task CarregaCatalogo(string mangaTitulo = null)
+    {
+        try
+        {
+            if (mangaTitulo is not null)
+            {
+                Mangas = await _mangaService.GetMangasPorTitulo(mangaTitulo);
+            }
+            else
+            {
+                Mangas = await _mangaService.GetMangas();
+            }
+        }
+        catch (Exception)
+        {
+            NavigationManager.NavigateTo("notauthorized");
         }
     }
 }

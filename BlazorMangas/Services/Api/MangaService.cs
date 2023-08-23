@@ -1,5 +1,4 @@
 ﻿using BlazorMangas.Models.DTOs;
-using BlazorMangas.Models.Enums;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text;
@@ -28,7 +27,31 @@ public class MangaService : IMangaService
         _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
     }
 
-    public async Task<MangaPaginacaoResponseDTO> GetMangasPaginacao(int pagina, 
+    public async Task<IEnumerable<MangaDTO>> GetMangasPorTitulo(string titulo)
+    {
+        try
+        {
+            var httpClient = _httpClientFactory.CreateClient("ApiMangas");
+            var response = await httpClient.GetAsync(apiEndpoint + "search/" + titulo);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<IEnumerable<MangaDTO>>();
+            }
+            else
+            {
+                var message = await response.Content.ReadAsStringAsync();
+                _logger.LogError($"Erro ao obter mangás com titulo {titulo} - {message}");
+                throw new Exception($"Status Code : {response.StatusCode} - {message}");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Erro ao obter o mangá pelo titulo={titulo} \n\n {ex.Message}");
+            throw;
+        }
+    }
+    public async Task<MangaPaginacaoResponseDTO> GetMangasPaginacao(int pagina,
         int quantidadePorPagina)
     {
         var caminho = $"paginacao?pagina={pagina}&quantidadePorPagina={quantidadePorPagina}";
@@ -41,7 +64,7 @@ public class MangaService : IMangaService
             if (httpResponse.IsSuccessStatusCode)
             {
                 var responseString = await httpResponse.Content.ReadAsStringAsync();
-                responsePaginacaoDTO = 
+                responsePaginacaoDTO =
                     JsonSerializer.Deserialize<MangaPaginacaoResponseDTO>
                     (responseString, _options);
 
@@ -50,7 +73,7 @@ public class MangaService : IMangaService
             }
             else
             {
-                _logger.LogWarning("O request para a API falhou com o status: " 
+                _logger.LogWarning("O request para a API falhou com o status: "
                     + httpResponse.StatusCode);
             }
             return responsePaginacaoDTO;
@@ -68,7 +91,7 @@ public class MangaService : IMangaService
         try
         {
             var httpClient = _httpClientFactory.CreateClient("ApiMangas");
-            var result = await httpClient.GetFromJsonAsync<List<MangaDTO>>(apiEndpoint);
+            var result = await httpClient.GetFromJsonAsync<IEnumerable<MangaDTO>>(apiEndpoint);
             return result;
         }
         catch (Exception ex)
